@@ -9,7 +9,6 @@ jobs:
       - name: Find component label
         id: component-label
         run: |
-          echo "${{github.event.issue.labels}}"
           issue_labels=$(jq -r '.label.name' "$GITHUB_EVENT_PATH")
           for label in $issue_labels; do
             if [[ $label == component* ]]; then
@@ -18,6 +17,8 @@ jobs:
               exit 0
             fi
           done
+          echo "No component label found"
+          exit 1
 
       - name: Find base issue
         id: base-issue
