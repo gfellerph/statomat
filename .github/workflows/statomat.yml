@@ -12,9 +12,9 @@ jobs:
         run: |
           issue_labels=${{ github.event.issue.labels }}
           for label in $issue_labels; do
-            if [[ $label == component:* ]]; then
-              echo $label
-              echo $label >> $GITHUB_OUTPUT
+            if [[ $label.name == component:* ]]; then
+              echo $label.name
+              echo $label.name >> $GITHUB_OUTPUT
               exit 0
             fi
           done
