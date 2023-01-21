@@ -11,10 +11,11 @@ jobs:
         id: component-label
         run: |
           echo ${{github.event.issue.labels}}
-          for label in ${{github.event.issue.labels}}; do
-            if [[ $label.name == component:* ]]; then
-              echo "$label.name"
-              echo $label.name >> $GITHUB_OUTPUT
+          issue_labels=$(jq '.label.name' "$GITHUB_EVENT_PATH")
+          for label in $issue_labels; do
+            if [[ $label == component* ]]; then
+              echo "Label $label is a component label."
+              echo label=$label >> $GITHUB_OUTPUT
               exit 0
             fi
           done
@@ -23,8 +24,8 @@ jobs:
         id: base-issue
         run: |
           echo ${{ steps.component-label.outputs }}
-          echo ${{ steps.component-label.outputs.output1 }}
-          LABEL1= ${{ steps.component-label.outputs.output1 }}
+          echo ${{ steps.component-label.outputs.label }}
+          LABEL1= ${{ steps.component-label.outputs.label }}
           LABEL2='base'
           ISSUE_SEARCH_RESULT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/search/issues?q=label:$LABEL1+label:$LABEL2)
           echo $ISSUE_SEARCH_RESULT
