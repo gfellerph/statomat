@@ -9,6 +9,7 @@ jobs:
       - name: Find component label
         id: component-label
         run: |
+          echo ${{ toJson(github.event)}}
           issue_labels=$(jq '[.issue.labels.[] | .name]' "$GITHUB_EVENT_PATH")
           for label in $issue_labels; do
             echo "$label"
