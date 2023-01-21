@@ -12,29 +12,3 @@ jobs:
           for label in $(echo $labels | jq -r '.[].name'); do
             echo "Label: $label"
           done
-      - name: Find component label
-        id: component-label
-        run: |
-          issue_labels=${{ toJson(github.event.issue.labels) }}
-          echo $just_labels | jq '[.[].name]'
-          just_labels=$just_labels | jq '[.[].name]'
-          for label in $just_labels; do
-            echo "$label"
-            if [[ $label == component* ]]; then
-              echo "Label $label is a component label."
-              echo "label=$label" >> $GITHUB_OUTPUT
-              exit 0
-            fi
-          done
-          echo "No component label found"
-          exit 1
-
-      - name: Find base issue
-        id: base-issue
-        run: |
-          echo ${{ steps.component-label.outputs }}
-          echo ${{ steps.component-label.outputs.label }}
-          LABEL1= ${{ fromJson(steps.component-label.outputs.label) }}
-          LABEL2='base'
-          ISSUE_SEARCH_RESULT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/search/issues?q=label:$LABEL1+label:$LABEL2)
-          echo $ISSUE_SEARCH_RESULT
