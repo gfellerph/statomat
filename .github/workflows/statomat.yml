@@ -10,11 +10,12 @@ jobs:
       - name: Find component label
         id: component-label
         run: |
-          issue_labels=${{ github.event.issue.labels }}
+          issue_labels=$(jq '.label.name' ${{github.event.issue.labels}})
+          echo "$issue_labels"
           for label in $issue_labels; do
-            if [[ ${{label.name == component:*}} ]]; then
-              echo ${{label.name}}
-              echo ${{label.name}} >> $GITHUB_OUTPUT
+            if [[ $label == component:* ]]; then
+              echo "$label"
+              echo $label >> $GITHUB_OUTPUT
               exit 0
             fi
           done
