@@ -9,7 +9,7 @@ jobs:
       - name: Find component label
         id: component-label
         run: |
-          issue_labels=$(jq '[.issue.labels.[].name]' "$GITHUB_EVENT_PATH")
+          issue_labels=$(jq '[.issue.labels.name]' "$GITHUB_EVENT_PATH")
           for label in $issue_labels; do
             echo "$label"
             if [[ $label == component* ]]; then
