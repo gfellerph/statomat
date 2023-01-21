@@ -10,7 +10,7 @@ jobs:
         id: component-label
         run: |
           echo "${{github.event.issue.labels}}"
-          issue_labels=$(jq '.name' "${{github.event.issue.labels}}")
+          issue_labels=$(jq '.issue.labels' "$GITHUB_EVENT_PATH")
           for label in $issue_labels; do
             if [[ $label == component* ]]; then
               echo "Label $label is a component label."
