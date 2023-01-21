@@ -1,0 +1,12 @@
+name: statomat
+on:
+  issues:
+    types: [labeled]
+jobs:
+  setstatus:
+    runs-on: ubuntu-latest
+    if: not contains(github.event.issue.labels.*.name, 'base')
+    steps:
+      - name: Print infos
+        run:
+          echo ${{ github.event.issue.title }}
