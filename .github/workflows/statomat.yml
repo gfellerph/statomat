@@ -9,7 +9,7 @@ jobs:
       - name: Find component label
         id: component-label
         run: |
-          echo ${{ toJson(github.event)}}
+          echo ${{ toJson(github.event.issue.labels) }} | jq '[.[].name]'
           echo issue_labels=$(${{ toJson(github.event.issue.labels)}} | jq '[.[].name]')
           for label in $issue_labels; do
             echo "$label"
