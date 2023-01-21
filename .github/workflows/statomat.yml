@@ -9,9 +9,10 @@ jobs:
       - name: Find component label
         id: component-label
         run: |
-          echo ${{ toJson(github.event.issue.labels) }} | jq '[.[].name]'
-          echo issue_labels=${{ toJson(github.event.issue.labels)}} | jq '[.[].name]'
-          for label in $issue_labels; do
+          issue_labels=${{ toJson(github.event.issue.labels) }}
+          echo $just_labels | jq '[.[].name]'
+          just_labels=$just_labels | jq '[.[].name]'
+          for label in $just_labels; do
             echo "$label"
             if [[ $label == component* ]]; then
               echo "Label $label is a component label."
