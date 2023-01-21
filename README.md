@@ -1,1 +1,1 @@
-# not the repo you are loogin for
+# not the repo you are looking for
