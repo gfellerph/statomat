@@ -13,6 +13,7 @@ jobs:
           issue_labels=${{ github.event.issue.labels }}
           for label in $issue_labels; do
             if [[ $label == component:* ]]; then
+              echo $label
               echo $label >> $GITHUB_OUTPUT
               exit 0
             fi
@@ -21,6 +22,8 @@ jobs:
       - name: Find base issue
         id: base-issue
         run: |
+          echo ${{ steps.component-label.outputs }}
+          echo ${{ steps.component-label.outputs.output1 }}
           LABEL1= ${{ steps.component-label.outputs.output1 }}
           LABEL2='base'
           ISSUE_SEARCH_RESULT=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/search/issues?q=label:$LABEL1+label:$LABEL2)
