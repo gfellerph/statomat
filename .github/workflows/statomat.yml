@@ -6,6 +6,12 @@ jobs:
   setstatus:
     runs-on: ubuntu-latest
     steps:
+      - name: Loop through labels
+        run: |
+          labels=${{ toJson(github.event.issue.labels) }}
+          for label in $(echo $labels | jq -r '.[].name'); do
+            echo "Label: $label"
+          done
       - name: Find component label
         id: component-label
         run: |
