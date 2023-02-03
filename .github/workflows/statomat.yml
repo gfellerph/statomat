@@ -1,14 +1,34 @@
-name: statomat
+name: Issue Label Workflow
+
 on:
   issues:
     types: [labeled]
+
 jobs:
-  setstatus:
+  issue-label:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Loop through labels
-        run: |
-          labels=${{ toJson(github.event.issue.labels) }}
-          for label in $(echo $labels | jq -r '.[].name'); do
-            echo "Label: $label"
-          done
+    - name: Check label format
+      if: startsWith(github.event.label.name, 'track:')
+      run: echo "Issue labeled with track label"
+    
+    - name: Search for base issue
+      run: |
+        BASE_ISSUE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/search/issues?q=label:\"base\"+type:issue)
+        echo "Base issue: $BASE_ISSUE"
+    
+    - name: Add task to tasklist
+      if: contains(toJson(BASE_ISSUE), 'tasklist')
+      run: |
+        echo "Tasklist found in base issue, adding task"
+        TASKLIST=$(jq '.items[0].body' <<< "$BASE_ISSUE")
+        NEW_TASK=$(echo "- [ ] [#${{ github.event.issue.number }}](${{ github.event.issue.html_url }}) $(github.event.issue.title)" >> "$TASKLIST")
+        curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" --data "{\"body\": \"$NEW_TASK\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$(jq '.items[0].number' <<< "$BASE_ISSUE")"
+    
+    - name: Create tasklist
+      if: contains(toJson(BASE_ISSUE), 'tasklist') == false
+      run: |
+        echo "No tasklist found in base issue, creating one"
+        NEW_TASK=$(echo "- [ ] [#${{ github.event.issue.number }}](${{ github.event.issue.html_url }}) $(github.event.issue.title)")
+        curl -X PATCH -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" --data "{\"body\": \"$NEW_TASK\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$(jq '.items[0].number' <<< "$BASE_ISSUE")"
